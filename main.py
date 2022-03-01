@@ -5,9 +5,9 @@ from inputs import handle_input as hinp
 
 def main():
     running = True
-    while running:
-        answer = hinp("What should I do", end=">>")
-        if answer in ("help","h","?"): # Help
+    while running: # Create the main loop
+        answer = hinp("What should I do", end=">>") # Get the entry from user
+        if answer in ("help","h","?"): # 
             lit.print_help()
         elif answer.split()[0] == "help": # Take help about functions
             func = None

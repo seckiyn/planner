@@ -16,6 +16,8 @@ QCHR="|"
 AEXT=".md"
 
 def files(ext="csv"):
+    """ Returns the file list consist of ext """
+    """
     # TODO: Add a more stable way to find files
     path = sys.argv[0]
     path = os.getcwd()
@@ -28,6 +30,10 @@ def files(ext="csv"):
         if extention.lower() == ext.lower():
             csvfiles.append(i)
     return csvfiles
+    """
+    files = [f for f in os.listdir(".") if os.path.isfile(f) and f.endswith("."+ext)]
+    return files
+
 
 # print(*files(),sep="\n")
 def setup(name="NewDoc",header_list=None):
@@ -96,7 +102,14 @@ def show_chain():
 
 def print_help():
     """ Prints a help text """
-    print("This is a help text")
+    help_text = """
+Type:
+    help --> Get this help text
+    new or n --> Create a new task
+    entry or e --> Enter a new task?
+    help [function_name] --> Get help about specific function
+    """
+    print(help_text)
 # show_chain()
 
 def new():
@@ -176,7 +189,12 @@ todos = {
         "showchain": show_chain,
         "show_chain": show_chain,
         "sc": show_chain,
-        "new": new
+        "new": new,
+        "setup":new,
+        "record":record,
+        "r":record,
+        "entry":record,
+        "e":record
         }
 
 def do(todo,*args,**kwargs):
