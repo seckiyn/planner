@@ -11,9 +11,10 @@ import os
 import random
 import chains
 from PIL import Image
-DEL=","
-QCHR="|"
-AEXT=".md"
+DEL="," # CSV Delimiter
+QCHR="\"" # CSV QuoteChar
+CCHR="#" # CSV Comment Char
+AEXT=".md" # Advice Extention
 
 def files(ext="csv"):
     """ Returns the file list consist of ext """
@@ -36,10 +37,16 @@ def files(ext="csv"):
 
 
 # print(*files(),sep="\n")
-def setup(name="NewDoc",header_list=None):
+def setup(name="NewDoc",header_list=None,setup_chains=""):
     """ Set up a new document name: str, header_list: list"""
+    # TODO: Add a warning if file is exists
+    if name+".csv" in files():
+        print("File already exists")
+        return False
     if not header_list:
         header_list=["NoHeader"]
+    if setup_chains:
+        header_list.append("#"+setup_chains)
     with open(name+".csv", "w", newline="") as csvfile:
         writer = csv.writer(csvfile, delimiter=DEL,
                 quotechar=QCHR, quoting=csv.QUOTE_MINIMAL)
@@ -134,7 +141,8 @@ def new():
             except ValueError:
                 print("Wrong!")
     # Setup everything
-    setup(name, headers)
+    setup_chains = "x".join(map(str, chainsize))
+    setup(name, headers,setup_chains)
     if chainsize:
         chains.setup(name, *chainsize)
 
@@ -152,7 +160,7 @@ def record():
         i = 0
         for j in file.readlines():
             i += 1
-        chain_save = i - 1
+        chain_save = i+1
         #DEBUG
         print(f"there is {i} lines here")
 
@@ -160,13 +168,16 @@ def record():
     ###CHAINS###
     ischain = None
     chainsize = None
-    my_chain = toprint.split(QCHR)
+    my_chain = toprint.split(CCHR)
     if len(my_chain) == 2:
         chainsize = map(int, my_chain[-1].split("x"))
         ischain = True
+    # TODO:Add a script that handles chain adding
     save_string = hinp("What to save(comma(,) seperated)")
     save_list = save_string.split(",")
     save(save_list,name)
+    #DEBUG
+    # print(f"Chain_save: {chain_save}, chainsize: {chainsize}")
     if ischain:
         chains.add(name.split(".")[0], chain_save,*chainsize)
 

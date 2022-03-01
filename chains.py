@@ -70,12 +70,8 @@ def add(name, number,w,h):
     add_x(name, x, y)
 
 def test():
-    setup("hello",6,5)
-    circle = [2,3,4,5,7,12,13,18,19,24,26,27,28,29]
-    for i in circle:
-        add("hello",i,6,5)
-    #DEBUG
-    Image.open("hello"+"."+EXT).show()
+    add("planner",1,4,4)
+    Image.open("planner"+"."+EXT).show()
 
 
 
