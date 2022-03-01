@@ -1,9 +1,5 @@
 import sys
 
-
-
-
-
 def handle_input(text=None, *args, end=":"):
     """
         Asks for input and returns the input text as wanted
@@ -18,7 +14,8 @@ def handle_input(text=None, *args, end=":"):
         text = text + str(end) + " " # If there's text adds end symbol and a space
 
     answer = input(text)
-    answer = answer.strip()
+    answer = answer.strip() # Strip the unnecessary spaces
+    answer = answer.lower() # Lower the answer so make it handle more easily?
     # Handle exits
     if not answer or answer == "exit":
         sys.exit()
