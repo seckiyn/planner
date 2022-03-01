@@ -1,0 +1,11 @@
+#pycache
+__pycache__
+
+# Dummy csv files
+*.csv
+
+# Dummy png files
+*.png
+
+# Byte Codes
+*.pyc
