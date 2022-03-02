@@ -1,8 +1,7 @@
 """
     This script will do the main work
     do -> do the given thing
-
-
+    add !d to just add day
 """
 import csv
 from inputs import handle_input as hinp
@@ -11,10 +10,12 @@ import os
 import random
 import chains
 from PIL import Image
+import datetime
 DEL="," # CSV Delimiter
 QCHR="\"" # CSV QuoteChar
 CCHR="#" # CSV Comment Char
 AEXT=".md" # Advice Extention
+BANG_CHR="!" # Bang chr
 
 def files(ext="csv"):
     """ Returns the file list consist of ext """
@@ -146,6 +147,42 @@ def new():
     if chainsize:
         chains.setup(name, *chainsize)
 
+insert_list = {
+        "d": datetime.date.today,
+        "k": lambda:"Now it's viable"
+        }
+def insert(count, string):
+    new_string = string
+    bang = string[count+1:count+2]
+    inserting = ""
+    try:
+        inserting = str(insert_list[bang]())
+    except KeyError:
+        print("Bang doesn't exists")
+    new_string = new_string[:count] + inserting + new_string[count+2:]
+    return new_string
+
+def control_bangs(string):
+    """ A function to control special characters in headers """
+    new_string = string
+    counts = list()
+    while BANG_CHR in new_string:
+        for i,j in enumerate(new_string):
+            if j == BANG_CHR:
+                new_string = insert(i, new_string)
+                break
+
+
+    return new_string
+
+def handle_headers(string):
+    raw_list = string.split(",") # Seperate by commas
+    header_list = list() # Header list 
+    for head in raw_list:
+        s_head = head.strip() # Strip to get rid of spaces
+        s_head = control_bangs(s_head) # Control if we should add something
+        header_list.append(s_head)
+    return header_list
 def record():
     """ Record to a task """
     file_list = files() # Get the csv file list
@@ -164,7 +201,7 @@ def record():
         #DEBUG
         print(f"there is {i} lines here")
 
-    print(toprint) # Print the headers 
+    print(*(toprint.split(",")), sep="   |   ") # Print the headers 
     ###CHAINS###
     ischain = None
     chainsize = None
@@ -174,7 +211,7 @@ def record():
         ischain = True
     # TODO:Add a script that handles chain adding
     save_string = hinp("What to save(comma(,) seperated)")
-    save_list = save_string.split(",")
+    save_list = handle_headers(save_string)
     save(save_list,name)
     #DEBUG
     # print(f"Chain_save: {chain_save}, chainsize: {chainsize}")
@@ -183,7 +220,8 @@ def record():
 
 def test():
     while True:
-        record()
+        ans = hinp("Bang control")
+        print(control_bangs(ans))
 
 todos = {
         "save": save,
