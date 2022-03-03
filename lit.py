@@ -40,8 +40,7 @@ def files(ext="csv"):
 # print(*files(),sep="\n")
 def setup(name="NewDoc",header_list=None,setup_chains=""):
     """ Set up a new document name: str, header_list: list"""
-    # TODO: Add a warning if file is exists
-    if name+".csv" in files():
+    if name+".csv" in files(): # Give a warning and return False if file already exists
         print("File already exists")
         return False
     if not header_list:
@@ -52,6 +51,8 @@ def setup(name="NewDoc",header_list=None,setup_chains=""):
         writer = csv.writer(csvfile, delimiter=DEL,
                 quotechar=QCHR, quoting=csv.QUOTE_MINIMAL)
         writer.writerow(header_list)
+
+    return True # Return a true if everything is complete
 
 def save(save_list,name=None):
     """ Save it to the document """
@@ -90,6 +91,9 @@ def advice(name):
 #DEBUG
 # advice("hello")
 
+""" What a analyzer should do:
+
+"""
 def stats():
     """ Analyze the data """
     pass
@@ -143,15 +147,19 @@ def new():
                 print("Wrong!")
     # Setup everything
     setup_chains = "x".join(map(str, chainsize))
-    setup(name, headers,setup_chains)
-    if chainsize:
+    setup_done = setup(name, headers,setup_chains)
+    if chainsize and setup_done:
         chains.setup(name, *chainsize)
 
+# Maybe import this to another file
 insert_list = {
         "d": datetime.date.today,
         "k": lambda:"Now it's viable"
         }
+
+
 def insert(count, string):
+    """ Delete count and count+1'th characters from string """
     new_string = string
     bang = string[count+1:count+2]
     inserting = ""
@@ -171,11 +179,10 @@ def control_bangs(string):
             if j == BANG_CHR:
                 new_string = insert(i, new_string)
                 break
-
-
     return new_string
 
 def handle_headers(string):
+    """ Takes string of words seperated with commas and process it and returns a list """
     raw_list = string.split(",") # Seperate by commas
     header_list = list() # Header list 
     for head in raw_list:
@@ -183,10 +190,29 @@ def handle_headers(string):
         s_head = control_bangs(s_head) # Control if we should add something
         header_list.append(s_head)
     return header_list
+
+def handle_chain(file, index, header): # file, index, sizex, sizey, ischain=True):
+    """ Get's the file: str, index: int, header: str and process them """
+    s_header = header.split(CCHR) # Take the header and split for any command
+    ischain = None
+    sizex = None
+    sizey = None
+    if len(s_header) == 2: # Is there any chain
+        ischain = True
+        sizex, sizey = s_header[-1].split("x") # Split it into sizex and sizey
+    if not ischain: # If there's no chain just return False
+        return False
+
+    name = file.split(".")[0] # Name of the file
+    sizex = int(sizex) # Turn str sizes to integer
+    sizey = int(sizey)
+    chains.add(name, index, sizex, sizey) # Save them using chains
+    return True # Return true
+
 def record():
     """ Record to a task """
     file_list = files() # Get the csv file list
-    chain_save = 0
+    chain_index = 0
     for i, j in enumerate(file_list): # Print file list
         print(str(i)+": "+j)
     answer = int(hinp("Which one do you want to save")) # Ask for file
@@ -197,26 +223,14 @@ def record():
         i = 0
         for j in file.readlines():
             i += 1
-        chain_save = i+1
-        #DEBUG
-        print(f"there is {i} lines here")
+        chain_index = i+1
 
     print(*(toprint.split(",")), sep="   |   ") # Print the headers 
-    ###CHAINS###
-    ischain = None
-    chainsize = None
-    my_chain = toprint.split(CCHR)
-    if len(my_chain) == 2:
-        chainsize = map(int, my_chain[-1].split("x"))
-        ischain = True
-    # TODO:Add a script that handles chain adding
-    save_string = hinp("What to save(comma(,) seperated)")
-    save_list = handle_headers(save_string)
-    save(save_list,name)
-    #DEBUG
-    # print(f"Chain_save: {chain_save}, chainsize: {chainsize}")
-    if ischain:
-        chains.add(name.split(".")[0], chain_save,*chainsize)
+
+    save_string = hinp("What to save(comma(,) seperated)") # Ask for the list with commas
+    save_list = handle_headers(save_string) # Handle the list with commas
+    save(save_list,name) # Save it using save function
+    handle_chain(file, chain_index,save_string) # Handle the chain if necessary
 
 def test():
     while True:
