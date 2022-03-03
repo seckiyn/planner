@@ -4,13 +4,14 @@
     add !d to just add day
 """
 import csv
-from inputs import handle_input as hinp
 import sys
 import os
 import random
 import chains
-from PIL import Image
 import datetime
+from inputs import handle_input as hinp
+from PIL import Image
+
 DEL="," # CSV Delimiter
 QCHR="\"" # CSV QuoteChar
 CCHR="#" # CSV Comment Char
@@ -33,8 +34,8 @@ def files(ext="csv"):
             csvfiles.append(i)
     return csvfiles
     """
-    files = [f for f in os.listdir(".") if os.path.isfile(f) and f.endswith("."+ext)]
-    return files
+    file = [f for f in os.listdir(".") if os.path.isfile(f) and f.endswith("."+ext)]
+    return file
 
 
 # print(*files(),sep="\n")
@@ -193,6 +194,7 @@ def handle_headers(string):
 
 def handle_chain(file, index, header): # file, index, sizex, sizey, ischain=True):
     """ Get's the file: str, index: int, header: str and process them """
+    file = str(file)
     s_header = header.split(CCHR) # Take the header and split for any command
     ischain = None
     sizex = None
@@ -217,20 +219,20 @@ def record():
         print(str(i)+": "+j)
     answer = int(hinp("Which one do you want to save")) # Ask for file
     name = file_list[answer]
-    toprint = None # Header placeholder
+    first_header = None # Header placeholder
     with open(name,"r") as file: # Check the file and get headers
-        toprint = file.readline()
+        first_header = file.readline()
         i = 0
         for j in file.readlines():
             i += 1
         chain_index = i+1
 
-    print(*(toprint.split(",")), sep="   |   ") # Print the headers 
+    print(*(first_header.split(",")), sep="   |   ") # Print the headers 
 
     save_string = hinp("What to save(comma(,) seperated)") # Ask for the list with commas
     save_list = handle_headers(save_string) # Handle the list with commas
     save(save_list,name) # Save it using save function
-    handle_chain(file, chain_index,save_string) # Handle the chain if necessary
+    handle_chain(name, chain_index,first_header) # Handle the chain if necessary
 
 def test():
     while True:

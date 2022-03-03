@@ -1,15 +1,14 @@
+""" This script handles any kind of input """
 import sys
 
-def handle_input(text=None, *args, end=":"):
+def handle_input(text=None, end=":"):
     """
         Asks for input and returns the input text as wanted
         text: string ([text]: [userinput])
     """
-    # Debug
-    # print("Args are", *args)
     # Check if input pretext is viable
     if not text:
-        text = "Your Input: " # If there's no text
+        text = "Your Input" + end # If there's no text
     else:
         text = text + str(end) + " " # If there's text adds end symbol and a space
 
@@ -21,20 +20,13 @@ def handle_input(text=None, *args, end=":"):
         sys.exit()
     return answer
 
-
 def test():
+    """ Testing """
     text = handle_input("Text", end=">>")
     end = handle_input("End", end=">>")
-    inputmebaby = handle_input(text=text,end=end)
+    inputmebaby = handle_input(text=text, end=end)
     print(inputmebaby)
 
-if __name__=="__main__":
-    while True: test()
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+    while True:
+        test()
