@@ -48,6 +48,7 @@ def setup(name="NewDoc",header_list=None,setup_chains=""):
         header_list=["NoHeader"]
     if setup_chains:
         header_list.append("#"+setup_chains)
+        chains.setup(name, *setup_chains.split("x"))
     with open(name+".csv", "w", newline="") as csvfile:
         writer = csv.writer(csvfile, delimiter=DEL,
                 quotechar=QCHR, quoting=csv.QUOTE_MINIMAL)

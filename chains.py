@@ -20,6 +20,8 @@ LWIDTH = 3 # Line width
 def setup(name, setup_width, setup_height):
     """ Will create WxH checkerboard like image and saves it"""
     name += "."+EXT # Name and the extention
+    setup_width = int(setup_width) # Make it integer
+    setup_height = int(setup_height)
     width = setup_width * WIDTH # Width of the png
     height = setup_height * HEIGHT # Height of the png
     img = Image.new(mode="RGB", size=(width, height), color=COLORS["dark"]) # Make the background
