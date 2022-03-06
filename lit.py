@@ -65,19 +65,20 @@ def setup(name="NewDoc",header_list=None,setup_chains=""):
 
 def save(save_list,name=None):
     """ Save it to the document """
-    tosave = None
-    if name:
+    tosave = None # Saving file name
+    if name: # If there's a name saving gile name is name
         tosave = name
-    if not name:
-        list_of_csv = files()
-        for i, j in enumerate(list_of_csv):
+    if not name: # If there's not a name let user choose
+        list_of_csv = files() # Get the list of .csv files
+        for i, j in enumerate(list_of_csv): # Print files to user to pic
             print(i, j)
-        answer = int(hinp("Which document"))
-        tosave = list_of_csv[answer]
-    with open(tosave, "a", newline="") as csvfile:
+        answer = int(hinp("Which document")) # Take an answer
+        tosave = list_of_csv[answer] # File name is choosen file name
+    with open(tosave, "a", newline="") as csvfile: # Open file and write save_list using csv writer
         writer = csv.writer(csvfile, delimiter=DEL,
                 quotechar=QCHR, quoting=csv.QUOTE_MINIMAL)
         writer.writerow(save_list)
+    return True
 #DEBUG
 # setup("hello",["id","mid","burada"])
 # save([1,2,"here"])

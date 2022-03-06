@@ -112,10 +112,11 @@ class OpeningFrame(ttk.Frame):
         # DEBUG
         print(self.tkvar.get())
         name = self.tkvar.get()
-        frm_main = MainFrame(self.master, name)
-        self.grid_forget()
-        print("Destroyed")
-        self.destroy()
+        name = name.split(".")[0] # Split the name to clear .csv part
+        frm_main = MainFrame(self.master, name) # Create a MainFrame and pass root and name of the file
+        self.grid_forget() # Forget itself
+        print("Destroyed") 
+        self.destroy() # Destroy it # TODO: Use back button
 
     def new(self):
         """ Summon the CreateFrame """
@@ -128,22 +129,98 @@ class OpeningFrame(ttk.Frame):
 
 
 class MainFrame(ttk.Frame):
-    def __init__(self, master, name):
+    def __init__(self, master, name=None):
         super().__init__(master)
         self.pack()
-
         self.name = name
+        """
+
+        if self.name: # If name is given
+            s_name = self.name.split(".") # If name is a file remove the extension
+            if len(s_name) > 1:
+                self.name = "".join(self.name.split[:-1])
+            elif s_name == 1:
+                self.name = s_name[0]
+        """
+        # DEBUG
+        print(self.name)
         self.setup()
 
     def setup(self):
-        btn_new = ttk.Button(self, text="DESTROY", command=lambda:print("BAAA!")).pack()
+        """ If there's no name ask for name """
+        # def save(save_list,name=None):
+        if not self.name:
+            # TODO: Add a way to get name
+            pass
+        frm = ttk.Frame(self) # A frame for label : entry
+        lbl_list = list() # List of labels widgets
+        self.entry_list = list() # List of entry widgets
+        header_names = lit.get_headers(self.name) # Get the headers
+
+        # Create labels entries
+        for name in header_names:
+            if "#" in name: # If header is a comment header do not include
+                pass
+            else:
+                lbl = ttk.Label(frm, text=str(name)) # Label with header name on it
+                lbl_list.append(lbl) # Add it to the label list
+                entry = ttk.Entry(frm) # Entry
+                entry.bind("<Return>", lambda event: self.save()) # Bind key Enter to save when pressed enter
+                self.entry_list.append(entry) # Add it to the entry list
+
+        self.entry_list[0].focus_set() # Set focus to the first entry
+
+        # Pack those headers
+        for index, label in enumerate(lbl_list):
+            label.grid(column=0, row=index, padx=5, pady=5)
+        for index, entry in enumerate(self.entry_list):
+            entry.grid(column=1, row=index, padx=5, pady=5)
+
+
+        # Button to submit and clear and back #TODO:Add back button functionality
+        frm_button = ttk.Frame(self)
+
+        btn_submit = ttk.Button(frm_button, text="SUBMIT", command=self.save)
+        btn_clear = ttk.Button(frm_button, text="CLEAR", command=self.clear)
+        btn_back = ttk.Button(frm_button, text="BACK", command=lambda:print("BAAA!"))
+
+        btn_submit.grid(column=0, row=0, padx=5, pady=3)
+        btn_clear.grid(column=0, row=1, padx=5, pady=3)
+        btn_back.grid(column=0, row=2, padx=5, pady=3)
+
+        # Pack frames
+        frm.grid(column=0, row=0)
+        frm_button.grid(column=0, row=1)
+
+
+    def save(self):
+        """ Gets entry list and saves it using lit module """
+        e_list = self.entry_list
+        name = self.name
+        save_list = list()
+        for entry in e_list:
+            text = entry.get()
+            if not text:
+                msgbox.showwarning("No text", "You didn't fill all the file") #TODO: change text of msgbox
+                return False
+            save_list.append(text)
+        completed = lit.save(save_list, name+".csv") # TODO: Add a constant for ".csv"
+        if completed:
+            msgbox.showinfo("SAVED", "You saved the file!")
+    def clear(self):
+        """ Clears the entris in entry list """
+        e_list = self.entry_list
+        for widget in e_list:
+            widget.delete(0,"end")
+
 
 
 def main():
     """ Main function """
+    # TODO: Add menu
     root = tk.Tk()
     # frm_opening = OpeningFrame(root)
-    frm = CreateFrame(root)
+    frm = MainFrame(root, "hello")
     root.mainloop()
 
 
