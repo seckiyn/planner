@@ -37,6 +37,13 @@ def files(ext="csv"):
     file = [f for f in os.listdir(".") if os.path.isfile(f) and f.endswith("."+ext)]
     return file
 
+def get_headers(file_name):
+    """ Returns the headers as list of a file """
+    with open(file_name+".csv", "r", newline="") as csvfile:
+        reader = csv.reader(csvfile, delimiter=DEL,
+                quotechar=QCHR, quoting=csv.QUOTE_MINIMAL)
+        header = next(reader)
+        return header
 
 # print(*files(),sep="\n")
 def setup(name="NewDoc",header_list=None,setup_chains=""):
