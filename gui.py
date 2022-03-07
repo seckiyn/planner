@@ -15,7 +15,7 @@ class CreateFrame(ttk.Frame):
         super().__init__(master)
         self.master = master # Add master to self to call later
         self.master.title("New Task") # Set title of the window
-        self.pack()
+        self.grid(row=0, column=0)
         self.setup() # Do the setup
         self.isButton = True
 
@@ -80,7 +80,7 @@ class OpeningFrame(ttk.Frame):
     def __init__(self, master):
         self.master = master # Set master to use later
         super().__init__(master) # Init the Frame object
-        self.pack() # Pack self
+        self.grid(column=0, row=0) # Grid self
         self.setup() # Setup the widgets
 
     def setup(self):
@@ -131,7 +131,7 @@ class OpeningFrame(ttk.Frame):
 class MainFrame(ttk.Frame):
     def __init__(self, master, name=None):
         super().__init__(master)
-        self.pack()
+        self.grid(row=0, column=0)
         self.name = name
         """
 
@@ -151,7 +151,10 @@ class MainFrame(ttk.Frame):
         # def save(save_list,name=None):
         if not self.name:
             # TODO: Add a way to get name
-            pass
+            name = None
+            while not name: # In case of getting a empty string
+                name = dialog.askstring("Name", "What is the name of the file you want to save?") # Ask for name
+            self.name = name
         frm = ttk.Frame(self) # A frame for label : entry
         lbl_list = list() # List of labels widgets
         self.entry_list = list() # List of entry widgets
@@ -214,13 +217,68 @@ class MainFrame(ttk.Frame):
             widget.delete(0,"end")
 
 
+def summon_main(root):
+    """ Summons the main frame onto root """
+    for widget in root.grid_slaves():
+        widget.grid_forget()
+    frm = MainFrame(root)
 
+def summon_create(root):
+    """ Summons the create frame onto root """
+    for widget in root.grid_slaves():
+        widget.grid_forget()
+    frm = CreateFrame(root)
+
+def summon_opening(root):
+    """ Summons the opening frame onto root """
+    for widget in root.grid_slaves():
+        widget.grid_forget()
+    frm = OpeningFrame(root)
+
+def show_about():
+    """ Show about window """
+    about_text = """
+Made by Mustafa Akkaya
+ github.com/seckiyn/
+"""
+    title = "About"
+    msgbox.showinfo(title, about_text)
+
+def show_help():
+    """ Show help window """
+    help_text = """
+This is a help text """
+    title = "Help"
+    msgbox.showinfo(title, help_text)
+
+
+import sys
 def main():
     """ Main function """
-    # TODO: Add menu
     root = tk.Tk()
+    # Menu starts
+    menubar = tk.Menu(root) # Main menu object
+    # New Menu Dropdowns
+    new_menu = tk.Menu(menubar, tearoff=0)
+    new_menu.add_command(label="Main", command=lambda: summon_main(root))
+    new_menu.add_command(label="Create", command=lambda: summon_create(root))
+    new_menu.add_command(label="Opening", command=lambda: summon_opening(root))
+    new_menu.add_separator()
+    new_menu.add_command(label="Exit", command=sys.exit)
+
+    # About menu dropdowns
+    help_menu = tk.Menu(menubar, tearoff=0)
+    help_menu.add_command(label="About", command=show_about)
+    help_menu.add_command(label="Help", command=show_help)
+
+    # Add menus to the main menu
+    menubar.add_cascade(label="New", menu=new_menu) # Add new menu to the main menu
+    menubar.add_cascade(label="Help", menu=help_menu) # Add help menu to the main menu
+
+    # Set the first frame
     # frm_opening = OpeningFrame(root)
     frm = MainFrame(root, "hello")
+    root.config(menu=menubar)
     root.mainloop()
 
 

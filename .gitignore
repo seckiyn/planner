@@ -9,3 +9,6 @@ __pycache__
 
 # Byte Codes
 *.pyc
+
+# Vim things
+*.swp
