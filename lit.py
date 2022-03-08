@@ -9,6 +9,7 @@ import os
 import random
 import chains
 import datetime
+import inputs
 from inputs import handle_input as hinp
 from PIL import Image
 
@@ -161,43 +162,13 @@ def new():
     if chainsize and setup_done:
         chains.setup(name, *chainsize)
 
-# Maybe import this to another file
-insert_list = {
-        "d": datetime.date.today,
-        "k": lambda:"Now it's viable"
-        }
-
-
-def insert(count, string):
-    """ Delete count and count+1'th characters from string """
-    new_string = string
-    bang = string[count+1:count+2]
-    inserting = ""
-    try:
-        inserting = str(insert_list[bang]())
-    except KeyError:
-        print("Bang doesn't exists")
-    new_string = new_string[:count] + inserting + new_string[count+2:]
-    return new_string
-
-def control_bangs(string):
-    """ A function to control special characters in headers """
-    new_string = string
-    counts = list()
-    while BANG_CHR in new_string:
-        for i,j in enumerate(new_string):
-            if j == BANG_CHR:
-                new_string = insert(i, new_string)
-                break
-    return new_string
-
 def handle_headers(string):
     """ Takes string of words seperated with commas and process it and returns a list """
     raw_list = string.split(",") # Seperate by commas
     header_list = list() # Header list 
     for head in raw_list:
         s_head = head.strip() # Strip to get rid of spaces
-        s_head = control_bangs(s_head) # Control if we should add something
+        s_head = inputs.control_bangs(s_head) # Control if we should add something
         header_list.append(s_head)
     return header_list
 
@@ -246,7 +217,7 @@ def record():
 def test():
     while True:
         ans = hinp("Bang control")
-        print(control_bangs(ans))
+        print(inputs.control_bangs(ans))
 
 todos = {
         "save": save,

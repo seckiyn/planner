@@ -1,6 +1,7 @@
 """ GUI Mode for planner """
 import tkinter as tk
 import lit
+from inputs import process_input as pinp
 from tkinter import ttk
 from tkinter import messagebox as msgbox
 from tkinter import simpledialog as dialog
@@ -9,6 +10,10 @@ from tkinter import simpledialog as dialog
 # FRAMES TODO
 # ADD BACK BUTTONS
 # ADD CLEAR BUTTONS
+def get(widget):
+    answer = pinp(widget.get())
+    return answer
+
 class CreateFrame(ttk.Frame):
     """ Create a new task window """
     def __init__(self, master):
@@ -38,7 +43,7 @@ class CreateFrame(ttk.Frame):
         header_number = None # Takes how many headers are there
         frm_entry = ttk.Frame(self) # New frame to put on entry boxes
         try: # Try if header number is a integer if it's not return False and end this function
-            header_number = int(self.entry_name.get()) # Get the header number
+            header_number = int(get(self.entry_name)) # Get the header number
         except ValueError:
             msgbox.showwarning(title="Not an integer", message="This is not a integer")
             return False
@@ -63,7 +68,7 @@ class CreateFrame(ttk.Frame):
             chainsize = dialog.askstring("Chains", "Size of chains(widthxheight)") # TODO: Change the input type
         header_list = list() # List of the headers
         for widget in widget_list: # Get the texts from widgets
-            header_list.append(widget.get())
+            header_list.append(get(widget))
 
         isitdone = lit.setup(name, header_list, chainsize) # If this is false file name is already in use
         if not isitdone: # If file exists show error and create from beginning
@@ -202,7 +207,7 @@ class MainFrame(ttk.Frame):
         name = self.name
         save_list = list()
         for entry in e_list:
-            text = entry.get()
+            text = get(entry)
             if not text:
                 msgbox.showwarning("No text", "You didn't fill all the file") #TODO: change text of msgbox
                 return False
