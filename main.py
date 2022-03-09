@@ -19,7 +19,7 @@ def main():
             except KeyError:
                 print("There's no function like that", my_func)
         else:
-            lit.do(answer)
+            lit.run_function(answer)
 
 if __name__ == "__main__":
     main()
