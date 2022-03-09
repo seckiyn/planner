@@ -172,9 +172,17 @@ def handle_headers(string):
         header_list.append(s_head)
     return header_list
 
-def handle_chain(file, index, header): # file, index, sizex, sizey, ischain=True):
+def handle_chain(file, index=None, header=None): # file, index, sizex, sizey, ischain=True):
     """ Get's the file: str, index: int, header: str and process them """
     file = str(file)
+    if not index or not header:
+        with open(file+".csv", "r") as csvfile:
+            my_header = csvfile.readline()
+            i = 0
+            for _ in csvfile.readlines():
+                i += 1
+            index = i
+            header = my_header
     s_header = header.split(CCHR) # Take the header and split for any command
     ischain = None
     sizex = None

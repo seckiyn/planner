@@ -6,13 +6,53 @@ from tkinter import ttk
 from tkinter import messagebox as msgbox
 from tkinter import simpledialog as dialog
 
+FRAMES = list()
 # def setup(name="NewDoc",header_list=None,setup_chains=""):
 # FRAMES TODO
 # ADD BACK BUTTONS
 # ADD CLEAR BUTTONS
 def get(widget):
+    """ Takes an Entry widget and returns its text processed """
     answer = pinp(widget.get())
     return answer
+
+def return_frame(root):
+    """ Return to the last frame """
+    new = None # Placeholder for new
+    is_slaves = False # Is there any frame on window right now
+    slaves = root.grid_slaves() # Get the frame on the root
+    if len(FRAMES) > 1: # If there's two or more frames in FRAME list
+        old = FRAMES.pop() # Get rid of last frame
+        new = FRAMES[-1] # Get the new frame
+        slaves[0].grid_forget() # Forget the current frame
+        new.grid(column=0, row=0) # Grid the new frame
+
+    """
+    if len(FRAMES) > 1:
+        slaves[0].grid_forget()
+        old = FRAMES.pop()
+        if FRAMES:
+            new = FRAMES[-1]
+        else:
+            new=old
+        is_slaves = True
+    print("FRAMES", FRAMES)
+    if FRAMES and is_slaves: # If there's still Frame left
+        print("FRAMES")
+        old = FRAMES.pop()
+        if FRAMES:
+            new = FRAMES[-1] # Get the last frame
+        else:
+            new = old
+        new.grid(column=0, row=0)
+    else:
+        print("NO FRAMES")
+        pass # Do nothing
+    """
+
+def add_return_frame(frm):
+    """ Adds frame to the FRAMES list """
+    FRAMES.append(frm)
 
 class CreateFrame(ttk.Frame):
     """ Create a new task window """
@@ -23,7 +63,7 @@ class CreateFrame(ttk.Frame):
         self.grid(row=0, column=0)
         self.setup() # Do the setup
         self.isButton = True
-
+        add_return_frame(self) # Add self to the return frame
     def setup(self):
         """ Will setup an Entry widget that get names, and various header size Entry
             widget and a Button widget that'll be submitting
@@ -78,7 +118,7 @@ class CreateFrame(ttk.Frame):
         """ This forgets instance of the class and creates from anew """
         self.pack_forget() # Unpack from master itself
         CreateFrame(self.master) # Create new instance
-        self.destroy() # Forget itself TODO: Do not destroy for back buttons?
+        # self.destroy() # Forget itself TODO: Do not destroy for back buttons?
 
 class OpeningFrame(ttk.Frame):
     """ If there are tasks this will enable you to choose """
@@ -87,6 +127,7 @@ class OpeningFrame(ttk.Frame):
         super().__init__(master) # Init the Frame object
         self.grid(column=0, row=0) # Grid self
         self.setup() # Setup the widgets
+        add_return_frame(self) # Add self to the return frame
 
     def setup(self):
         """ Will setup a dropbox and a button to submit """
@@ -103,6 +144,7 @@ class OpeningFrame(ttk.Frame):
         self.drop_box = ttk.OptionMenu(self,self.tkvar, *items)
         self.btn_submit = ttk.Button(self, text="SUBMIT", command=self.summon)
         btn_new = ttk.Button(self, text="CREATE", command=self.new)
+        btn_back = ttk.Button(self, text="BACK", command=return_frame)
 
         self.drop_box.grid(column=0, row=0, padx=50, pady=50) # Pack the drop_box
         self.btn_submit.grid(column=0, row=1, padx=50, pady=(50,5)) # Pack the submit button
@@ -120,15 +162,15 @@ class OpeningFrame(ttk.Frame):
         name = name.split(".")[0] # Split the name to clear .csv part
         frm_main = MainFrame(self.master, name) # Create a MainFrame and pass root and name of the file
         self.grid_forget() # Forget itself
-        print("Destroyed") 
-        self.destroy() # Destroy it # TODO: Use back button
+        print("Destroyed")
+        # self.destroy() # Destroy it # TODO: Use back button
 
     def new(self):
         """ Summon the CreateFrame """
         frm_new = CreateFrame(self.master)
         self.grid_forget()
         print("Destroyed")
-        self.destroy()
+        # self.destroy()
 
 
 
@@ -148,7 +190,8 @@ class MainFrame(ttk.Frame):
                 self.name = s_name[0]
         """
         # DEBUG
-        print(self.name)
+        # print(self.name)
+        add_return_frame(self) # Add self to the return frame
         self.setup()
 
     def setup(self):
@@ -157,8 +200,10 @@ class MainFrame(ttk.Frame):
         if not self.name:
             # TODO: Add a way to get name
             name = None
-            while not name: # In case of getting a empty string
+            infalse = None
+            while not name or not infiles: # In case of getting a empty string
                 name = dialog.askstring("Name", "What is the name of the file you want to save?") # Ask for name
+                infiles = name+".csv" in lit.files()
             self.name = name
         frm = ttk.Frame(self) # A frame for label : entry
         lbl_list = list() # List of labels widgets
@@ -215,12 +260,14 @@ class MainFrame(ttk.Frame):
         completed = lit.save(save_list, name+".csv") # TODO: Add a constant for ".csv"
         if completed:
             msgbox.showinfo("SAVED", "You saved the file!")
+        lit.handle_chain(name)
+        return True
     def clear(self):
         """ Clears the entris in entry list """
         e_list = self.entry_list
         for widget in e_list:
             widget.delete(0,"end")
-
+# def handle_chain(file, index, header): # file, index, sizex, sizey, ischain=True):
 
 def summon_main(root):
     """ Summons the main frame onto root """
@@ -276,13 +323,18 @@ def main():
     help_menu.add_command(label="About", command=show_about)
     help_menu.add_command(label="Help", command=show_help)
 
+    # Back menu
+    back_menu = tk.Menu(menubar, tearoff=0)
+    back_menu.add_command(label="Back", command=lambda: return_frame(root))
+
     # Add menus to the main menu
     menubar.add_cascade(label="New", menu=new_menu) # Add new menu to the main menu
     menubar.add_cascade(label="Help", menu=help_menu) # Add help menu to the main menu
+    menubar.add_cascade(label="Navigate", menu=back_menu)
 
     # Set the first frame
-    # frm_opening = OpeningFrame(root)
-    frm = MainFrame(root, "hello")
+    frm_opening = OpeningFrame(root)
+    # frm = MainFrame(root, "hello")
     root.config(menu=menubar)
     root.mainloop()
 
