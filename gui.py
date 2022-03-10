@@ -1,16 +1,14 @@
 """ GUI Mode for planner """
+import sys
 import tkinter as tk
-import lit
-from inputs import process_input as pinp
 from tkinter import ttk
 from tkinter import messagebox as msgbox
 from tkinter import simpledialog as dialog
+from inputs import process_input as pinp
+import lit
 
 FRAMES = list()
-# def setup(name="NewDoc",header_list=None,setup_chains=""):
-# FRAMES TODO
-# ADD BACK BUTTONS
-# ADD CLEAR BUTTONS
+
 def get(widget):
     """ Takes an Entry widget and returns its text processed """
     answer = pinp(widget.get())
@@ -26,29 +24,6 @@ def return_frame(root):
         new = FRAMES[-1] # Get the new frame
         slaves[0].grid_forget() # Forget the current frame
         new.grid(column=0, row=0) # Grid the new frame
-
-    """
-    if len(FRAMES) > 1:
-        slaves[0].grid_forget()
-        old = FRAMES.pop()
-        if FRAMES:
-            new = FRAMES[-1]
-        else:
-            new=old
-        is_slaves = True
-    print("FRAMES", FRAMES)
-    if FRAMES and is_slaves: # If there's still Frame left
-        print("FRAMES")
-        old = FRAMES.pop()
-        if FRAMES:
-            new = FRAMES[-1] # Get the last frame
-        else:
-            new = old
-        new.grid(column=0, row=0)
-    else:
-        print("NO FRAMES")
-        pass # Do nothing
-    """
 
 def add_return_frame(frm):
     """ Adds frame to the FRAMES list """
@@ -138,17 +113,23 @@ class OpeningFrame(ttk.Frame):
             # DEBUG
             print("There's no item here")
 
+        frm_btn = ttk.Frame(self)
         # Tkinter widgets
         self.tkvar = tk.StringVar(self.master) # Set the object you'll get the choice from
         self.tkvar.set(items[0]) # Set it's original text 
         self.drop_box = ttk.OptionMenu(self,self.tkvar, *items)
-        self.btn_submit = ttk.Button(self, text="SUBMIT", command=self.summon)
-        btn_new = ttk.Button(self, text="CREATE", command=self.new)
-        btn_back = ttk.Button(self, text="BACK", command=return_frame)
+        # BUTTONS
+        self.btn_submit = ttk.Button(frm_btn, text="SUBMIT", command=self.summon)
+        btn_new = ttk.Button(frm_btn, text="CREATE", command=self.new)
+        btn_back = ttk.Button(frm_btn, text="BACK", command=return_frame)
+        btn_show = ttk.Button(frm_btn, text="SHOW", command=self.show)
 
         self.drop_box.grid(column=0, row=0, padx=50, pady=50) # Pack the drop_box
-        self.btn_submit.grid(column=0, row=1, padx=50, pady=(50,5)) # Pack the submit button
-        btn_new.grid(column=0, row=2, padx=50, pady=(5,50)) # Pack the create button
+        frm_btn.grid(column=0, row=1)
+        self.btn_submit.pack(padx=50, pady=(50,5)) # Pack the submit button
+        btn_new.pack(padx=50, pady=(5,50)) # Pack the create button
+        btn_back.pack(padx=50, pady=5)
+        btn_show.pack(padx=50, pady=5)
 
     def get_items(self):
         """ Get the csv file list """
@@ -170,7 +151,14 @@ class OpeningFrame(ttk.Frame):
         frm_new = CreateFrame(self.master)
         self.grid_forget()
         print("Destroyed")
-        # self.destroy()
+
+    def show(self):
+        """ Show the chains """
+        name = self.tkvar.get() # Name on the dropbox
+        name, *_ = name.split(".") # Get the name of the file
+        run = lit.show_chain(name) # Get if it did show
+        if not run: # If it doesn't show, show an error
+            msgbox.showwarning("File Error", "There's no chains file of that")
 
 
 
@@ -178,19 +166,8 @@ class OpeningFrame(ttk.Frame):
 class MainFrame(ttk.Frame):
     def __init__(self, master, name=None):
         super().__init__(master)
-        self.grid(row=0, column=0)
-        self.name = name
-        """
-
-        if self.name: # If name is given
-            s_name = self.name.split(".") # If name is a file remove the extension
-            if len(s_name) > 1:
-                self.name = "".join(self.name.split[:-1])
-            elif s_name == 1:
-                self.name = s_name[0]
-        """
-        # DEBUG
-        # print(self.name)
+        self.grid(row=0, column=0) # Grid self into root
+        self.name = name # What is name
         add_return_frame(self) # Add self to the return frame
         self.setup()
 
@@ -200,10 +177,10 @@ class MainFrame(ttk.Frame):
         if not self.name:
             # TODO: Add a way to get name
             name = None
-            infalse = None
-            while not name or not infiles: # In case of getting a empty string
+            in_files = None
+            while not name or not in_files: # In case of getting a empty string
                 name = dialog.askstring("Name", "What is the name of the file you want to save?") # Ask for name
-                infiles = name+".csv" in lit.files()
+                in_files = name+".csv" in lit.files()
             self.name = name
         frm = ttk.Frame(self) # A frame for label : entry
         lbl_list = list() # List of labels widgets
@@ -273,19 +250,19 @@ def summon_main(root):
     """ Summons the main frame onto root """
     for widget in root.grid_slaves():
         widget.grid_forget()
-    frm = MainFrame(root)
+    MainFrame(root) # Show mainframe
 
 def summon_create(root):
     """ Summons the create frame onto root """
     for widget in root.grid_slaves():
         widget.grid_forget()
-    frm = CreateFrame(root)
+    CreateFrame(root) # Show createframe
 
 def summon_opening(root):
     """ Summons the opening frame onto root """
     for widget in root.grid_slaves():
         widget.grid_forget()
-    frm = OpeningFrame(root)
+    OpeningFrame(root) # Show opening frame
 
 def show_about():
     """ Show about window """
@@ -304,7 +281,7 @@ This is a help text """
     msgbox.showinfo(title, help_text)
 
 
-import sys
+
 def main():
     """ Main function """
     root = tk.Tk()
@@ -333,7 +310,7 @@ def main():
     menubar.add_cascade(label="Navigate", menu=back_menu)
 
     # Set the first frame
-    frm_opening = OpeningFrame(root)
+    OpeningFrame(root) # This will create a frame and show itself
     # frm = MainFrame(root, "hello")
     root.config(menu=menubar)
     root.mainloop()

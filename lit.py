@@ -97,16 +97,24 @@ def stats(name):
 #     """ Add one to the chain """
 #     chains.add_chain(name, number, width, height)
 
-def show_chain():
+def show_chain(name):
     """ Shows chain image """
+    file_name = None
     file_list = files(chains.EXT) # List of the files
-    print(file_list)
-    for index, file in enumerate(file_list): # Print files and indexes on screen
-        print(str(index)+": "+str(file))
-    index = int(hinp("Which one")) # Get the input
-    file_name = file_list[index] # Filename
-    img = Image.open(file_name)
-    img.show()
+    if not name:
+        print(file_list)
+        for index, file in enumerate(file_list): # Print files and indexes on screen
+            print(str(index)+": "+str(file))
+        index = int(hinp("Which one")) # Get the input
+        file_name = file_list[index] # Filename
+    else:
+        file_name = name + "." + chains.EXT
+    if file_name in file_list:
+        img = Image.open(file_name)
+        img.show()
+        return True
+    else:
+        return False
 
 def print_help():
     """ Prints a help text """
