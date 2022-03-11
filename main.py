@@ -17,7 +17,7 @@ def main():
             func = None
             my_func = answer.split()[-1]
             try:
-                func = lit.todos[my_func]
+                func = lit.TO_DOS[my_func]
                 print(func.__doc__)
             except KeyError:
                 print("There's no function like that", my_func)
@@ -26,10 +26,10 @@ def main():
 def args():
     """ Parse the arguments if there's any """
     # TODO: Add a way to record without entering program
-    ap = argparse.ArgumentParser() # Argument parser
-    ap.add_argument("-f", "--function", required=True,\
+    argument_parser = argparse.ArgumentParser() # Argument parser
+    argument_parser.add_argument("-f", "--function", required=True,\
             help="Function to make") # Function argument
-    args = vars(ap.parse_args()) # Parse the arguments
+    args = vars(argument_parser.parse_args()) # Parse the arguments
     function = args["function"]
     lit.run_function(function)
 
