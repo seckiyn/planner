@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ Main script """
 import sys
 import argparse
@@ -5,7 +6,6 @@ import lit
 from inputs import handle_input as hinp
 
 
-# TODO: Argument parser
 def main():
     """ Main loop function """
     running = True
