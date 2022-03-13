@@ -1,5 +1,5 @@
 """ This script will create a image of chain image and will control addition to them"""
-
+import lit
 from PIL import Image, ImageDraw
 
 # Constants
@@ -20,6 +20,7 @@ LWIDTH = 3 # Line width
 def setup(name, setup_width, setup_height):
     """ Will create WxH checkerboard like image and saves it"""
     name += "."+EXT # Name and the extention
+    name = lit.process_file(name)
     setup_width = int(setup_width) # Make it integer
     setup_height = int(setup_height)
     width = setup_width * WIDTH # Width of the png
@@ -41,6 +42,7 @@ def setup(name, setup_width, setup_height):
 def add_x(name, x_pos, y_pos):
     """ Add x to the image """
     name += "."+EXT # Image to open
+    name = lit.process_file(name)
     img = Image.open(name) # Open the file
     draw = ImageDraw.Draw(img) # Draw object
     first = (

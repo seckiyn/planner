@@ -10,6 +10,7 @@ import chains
 import inputs
 from inputs import handle_input as hinp
 
+
 # import datetime
 # import sys
 # import random
@@ -18,7 +19,12 @@ QCHR = "\"" # CSV QuoteChar
 CCHR = "#" # CSV Comment Char
 AEXT = ".md" # Advice Extention
 BANG_CHR = "!" # Bang chr
+PATH = os.path.dirname(os.path.abspath(__file__))
 
+def process_file(name):
+    """ Process file paths """
+    new_name = os.path.join(PATH, name)
+    return new_name
 def files(ext="csv"):
     """ Returns the file list consist of ext """
     file_path = os.path.dirname(os.path.abspath(__file__))
@@ -27,7 +33,7 @@ def files(ext="csv"):
 
 def get_headers(file_name):
     """ Returns the headers as list of a file """
-    with open(file_name+".csv", "r", newline="") as csvfile:
+    with open(process_file(file_name+".csv"), "r", newline="") as csvfile:
         reader = csv.reader(csvfile, delimiter=DEL,\
                 quotechar=QCHR, quoting=csv.QUOTE_MINIMAL)
         header = next(reader)
@@ -44,7 +50,7 @@ def setup(name="NewDoc", header_list=None, setup_chains=""):
     if setup_chains:
         header_list.append("#" + setup_chains)
         chains.setup(name, *setup_chains.split("x"))
-    with open(name+".csv", "w", newline="") as csvfile:
+    with open(process_file(name+".csv"), "w", newline="") as csvfile:
         writer = csv.writer(csvfile, delimiter=DEL,\
                 quotechar=QCHR, quoting=csv.QUOTE_MINIMAL)
         writer.writerow(header_list)
@@ -62,7 +68,7 @@ def save(save_list, name=None):
             print(i, j)
         answer = int(hinp("Which document")) # Take an answer
         tosave = list_of_csv[answer] # File name is choosen file name
-    with open(tosave, "a", newline="") as csvfile: # Open file and write save_list using csv writer
+    with open(process_file(tosave), "a", newline="") as csvfile: # Open file and write save_list using csv writer
         writer = csv.writer(csvfile, delimiter=DEL,\
                 quotechar=QCHR, quoting=csv.QUOTE_MINIMAL)
         writer.writerow(save_list)
@@ -73,7 +79,7 @@ def save(save_list, name=None):
 
 def add_advice(name):
     """ Adds advice to the name file """
-    with open(name+AEXT, "a") as file:
+    with open(process_file(name+AEXT), "a") as file:
         answer = hinp("What should I add")
         file.write(answer+"\n")
 #DEBUG
@@ -82,7 +88,7 @@ def add_advice(name):
 def advice(name):
     """ Show one advice """
     list_of_advices = list()
-    with open(name+AEXT, "r") as file:
+    with open(process_file(name+AEXT), "r") as file:
         for line in file.readlines():
             list_of_advices.append(line[:-1]) # Remove line character
             print("list of advices: ", list_of_advices)
@@ -170,7 +176,7 @@ def handle_chain(file, index=None, header=None): # file, index, sizex, sizey, is
     """ Get's the file: str, index: int, header: str and process them """
     file = str(file)
     if not index or not header:
-        with open(file+".csv", "r") as csvfile:
+        with open(process_file(file+".csv"), "r") as csvfile:
             my_header = csvfile.readline()
             i = 0
             for _ in csvfile.readlines():
@@ -202,7 +208,7 @@ def record():
     answer = int(hinp("Which one do you want to save")) # Ask for file
     name = file_list[answer]
     first_header = None # Header placeholder
-    with open(name, "r") as file: # Check the file and get headers
+    with open(process_file(name), "r") as file: # Check the file and get headers
         first_header = file.readline()
         i = 0
         for j in file.readlines():
