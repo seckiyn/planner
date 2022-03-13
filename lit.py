@@ -21,7 +21,8 @@ BANG_CHR = "!" # Bang chr
 
 def files(ext="csv"):
     """ Returns the file list consist of ext """
-    file = [f for f in os.listdir(".") if os.path.isfile(f) and f.endswith("."+ext)]
+    file_path = os.path.dirname(os.path.abspath(__file__))
+    file = [f for f in os.listdir(file_path) if f.endswith("."+ext)]
     return file
 
 def get_headers(file_name):
