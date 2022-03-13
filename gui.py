@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """ GUI Mode for planner """
 import sys
 import tkinter as tk
