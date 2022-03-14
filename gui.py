@@ -101,6 +101,7 @@ class OpeningFrame(ttk.Frame):
     def __init__(self, master):
         self.master = master # Set master to use later
         super().__init__(master) # Init the Frame object
+        self.master.title("Choose a task") # Set title of the window
         self.grid(column=0, row=0) # Grid self
         self.setup() # Setup the widgets
         add_return_frame(self) # Add self to the return frame
@@ -165,12 +166,16 @@ class OpeningFrame(ttk.Frame):
 
 
 class MainFrame(ttk.Frame):
+    """ Record a task """
     def __init__(self, master, name=None):
         super().__init__(master)
-        self.grid(row=0, column=0) # Grid self into root
         self.name = name # What is name
+        is_everything_okay = self.setup()
+        if not is_everything_okay:
+            return None
+        self.master.title("Record Task")
         add_return_frame(self) # Add self to the return frame
-        self.setup()
+        self.grid(row=0, column=0) # Grid self into root
 
     def setup(self):
         """ If there's no name ask for name """
@@ -187,6 +192,9 @@ class MainFrame(ttk.Frame):
         lbl_list = list() # List of labels widgets
         self.entry_list = list() # List of entry widgets
         header_names = lit.get_headers(self.name) # Get the headers
+        if not header_names:
+            msgbox.showwarning("Empty", "File is empty!")
+            return False
 
         # Create labels entries
         for name in header_names:
@@ -222,6 +230,7 @@ class MainFrame(ttk.Frame):
         # Pack frames
         frm.grid(column=0, row=0)
         frm_button.grid(column=0, row=1)
+        return True
 
 
     def save(self):

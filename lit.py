@@ -19,25 +19,31 @@ QCHR = "\"" # CSV QuoteChar
 CCHR = "#" # CSV Comment Char
 AEXT = ".md" # Advice Extention
 BANG_CHR = "!" # Bang chr
-PATH = os.path.dirname(os.path.abspath(__file__))
+PATH = os.path.dirname(os.path.abspath(__file__)) # Path of the script
 
-def process_file(name):
+def process_file(name=None):
     """ Process file paths """
+    if not name:
+        return PATH
     new_name = os.path.join(PATH, name)
     return new_name
 def files(ext="csv"):
     """ Returns the file list consist of ext """
-    file_path = os.path.dirname(os.path.abspath(__file__))
+    file_path = process_file()
     file = [f for f in os.listdir(file_path) if f.endswith("."+ext)]
     return file
 
 def get_headers(file_name):
     """ Returns the headers as list of a file """
+    header = None
     with open(process_file(file_name+".csv"), "r", newline="") as csvfile:
         reader = csv.reader(csvfile, delimiter=DEL,\
                 quotechar=QCHR, quoting=csv.QUOTE_MINIMAL)
-        header = next(reader)
-        return header
+        try:
+            header = next(reader)
+        except StopIteration as e:
+            print(e)
+    return header
 
 # print(*files(),sep="\n")
 def setup(name="NewDoc", header_list=None, setup_chains=""):
