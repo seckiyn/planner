@@ -9,11 +9,18 @@ from inputs import process_input as pinp
 import lit
 
 FRAMES = list()
+# WINDOW_SIZE = "300x300"
 
 def get(widget):
     """ Takes an Entry widget and returns its text processed """
     answer = pinp(widget.get())
     return answer
+
+def grid_me(frame):
+    """ Grid given frame """
+    frame.grid(column=0, row=0, sticky="nsew")
+    frame.grid_rowconfigure(0, weight=1)
+    frame.grid_columnconfigure(0, weight=1)
 
 def return_frame(root):
     """ Return to the last frame """
@@ -24,7 +31,8 @@ def return_frame(root):
         old = FRAMES.pop() # Get rid of last frame
         new = FRAMES[-1] # Get the new frame
         slaves[0].grid_forget() # Forget the current frame
-        new.grid(column=0, row=0) # Grid the new frame
+        # new.grid(column=0, row=0, sticky="nsew") # Grid the new frame
+        grid_me(new)
 
 def add_return_frame(frm):
     """ Adds frame to the FRAMES list """
@@ -36,7 +44,8 @@ class CreateFrame(ttk.Frame):
         super().__init__(master)
         self.master = master # Add master to self to call later
         self.master.title("New Task") # Set title of the window
-        self.grid(row=0, column=0)
+        # self.grid(row=0, column=0, sticky="nsew")
+        grid_me(self)
         self.setup() # Do the setup
         self.isButton = True
         add_return_frame(self) # Add self to the return frame
@@ -102,7 +111,9 @@ class OpeningFrame(ttk.Frame):
         self.master = master # Set master to use later
         super().__init__(master) # Init the Frame object
         self.master.title("Choose a task") # Set title of the window
-        self.grid(column=0, row=0) # Grid self
+        # self.grid(column=0, row=0) # Grid self
+        # self.grid(row=0, column=0, sticky="nsew")
+        grid_me(self)
         self.setup() # Setup the widgets
         add_return_frame(self) # Add self to the return frame
 
@@ -175,7 +186,10 @@ class MainFrame(ttk.Frame):
             return None
         self.master.title("Record Task")
         add_return_frame(self) # Add self to the return frame
-        self.grid(row=0, column=0) # Grid self into root
+        # self.grid(row=0, column=0) # Grid self into root
+        # self.grid(row=0, column=0, sticky="nsew")
+        grid_me(self)
+
 
     def setup(self):
         """ If there's no name ask for name """
@@ -295,6 +309,9 @@ This is a help text """
 def main():
     """ Main function """
     root = tk.Tk()
+    # root.geometry(WINDOW_SIZE)
+    root.grid_rowconfigure(0, weight=1)
+    root.grid_columnconfigure(0, weight=1)
     # Menu starts
     menubar = tk.Menu(root) # Main menu object
     # New Menu Dropdowns
