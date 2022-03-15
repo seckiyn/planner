@@ -144,7 +144,8 @@ class OpeningFrame(ttk.Frame):
         name = self.tkvar.get()
         name = name.split(".")[0] # Split the name to clear .csv part
         frm_main = MainFrame(self.master, name) # Create a MainFrame and pass root and name of the file
-        self.grid_forget() # Forget itself
+        if frm_main.is_everything_okay: # If there's no frm_main don't forget self
+            self.grid_forget() # Forget itself
         print("Destroyed")
         # self.destroy() # Destroy it # TODO: Use back button
 
@@ -170,12 +171,14 @@ class MainFrame(ttk.Frame):
     def __init__(self, master, name=None):
         super().__init__(master)
         self.name = name # What is name
-        is_everything_okay = self.setup()
-        if not is_everything_okay:
+        self.is_everything_okay = self.setup()
+        if not self.is_everything_okay: # If setup isn't succesful abort the MainFrame
             return None
         self.master.title("Record Task")
         add_return_frame(self) # Add self to the return frame
         self.grid(row=0, column=0) # Grid self into root
+        # DEBUG
+        # print("I'm in mainframe init")
 
     def setup(self):
         """ If there's no name ask for name """
