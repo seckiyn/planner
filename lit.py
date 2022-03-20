@@ -178,6 +178,16 @@ def handle_headers(string):
         header_list.append(s_head)
     return header_list
 
+def check_chains(header):
+    """ Checks the header and returns if there's a indication of chains """
+    is_chain = None
+    sizex = None
+    sizey = None
+    s_header = header.split(CCHR)
+    if len(s_header) == 2:
+        is_chain = True
+        sizex, sizey = s_header[-1].split("x") # Split it into sizex and sizey
+    return is_chain, sizex, sizey
 def handle_chain(file, index=None, header=None): # file, index, sizex, sizey, ischain=True):
     """ Get's the file: str, index: int, header: str and process them """
     file = str(file)
@@ -190,9 +200,7 @@ def handle_chain(file, index=None, header=None): # file, index, sizex, sizey, is
             index = i
             header = my_header
     s_header = header.split(CCHR) # Take the header and split for any command
-    ischain = None
-    sizex = None
-    sizey = None
+    ischain, sizex, sizey = check_chains(header)
     if len(s_header) == 2: # Is there any chain
         ischain = True
         sizex, sizey = s_header[-1].split("x") # Split it into sizex and sizey
@@ -204,6 +212,28 @@ def handle_chain(file, index=None, header=None): # file, index, sizex, sizey, is
     sizey = int(sizey)
     chains.add(name, index, sizex, sizey) # Save them using chains
     return True # Return true
+
+def remove_task(name):
+    try:
+        os.remove(process_file(name+".csv"))
+    except Exception as e:
+        pass
+    try:
+        os.remove(process_file(name + "." + chains.EXT))
+    except Exception as e:
+        pass
+
+def remove():
+    """ Remove a file cli version """
+    file_list = files()
+    for index, filename in enumerate(file_list):
+        print(str(index) + " : ", str(filename))
+    answer = int(hinp("Choose a file to delete"))
+    try:
+        remove_task("".join(file_list[answer].split(".")[:-1]))
+    except IndexError:
+        print("Please choose an index in range")
+
 
 def record():
     """ Record to a task """
@@ -250,7 +280,8 @@ TO_DOS = {
         "record":record,
         "r":record,
         "entry":record,
-        "e":record
+        "e":record,
+        "remove": remove
         }
 
 """

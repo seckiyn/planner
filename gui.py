@@ -134,6 +134,7 @@ class OpeningFrame(ttk.Frame):
         # BUTTONS
         self.btn_submit = ttk.Button(frm_btn, text="SUBMIT", command=self.summon)
         btn_new = ttk.Button(frm_btn, text="CREATE", command=self.new)
+        btn_delete = ttk.Button(frm_btn, text="DELETE", command=self.delete)
         btn_back = ttk.Button(frm_btn, text="BACK", command=return_frame)
         btn_show = ttk.Button(frm_btn, text="SHOW", command=self.show)
 
@@ -143,6 +144,14 @@ class OpeningFrame(ttk.Frame):
         btn_new.pack(padx=50, pady=(5,50)) # Pack the create button
         btn_back.pack(padx=50, pady=5)
         btn_show.pack(padx=50, pady=5)
+        btn_delete.pack(padx=50, pady=5)
+
+    def delete(self):
+        name = self.tkvar.get()
+        name = name.split(".")[0] # Split the name to clear .csv part
+        warning = msgbox.askyesno("Delete?", f"Do you want to delete {name}")
+        if warning:
+            lit.remove_task(name)
 
     def get_items(self):
         """ Get the csv file list """
